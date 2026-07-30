@@ -1,7 +1,11 @@
 import * as ReactPaginateModule from "react-paginate";
 import css from "./Pagination.module.css";
 
-const ReactPaginate = ReactPaginateModule.default.default;
+const ReactPaginate = (
+  ReactPaginateModule.default as typeof ReactPaginateModule.default & {
+    default: typeof ReactPaginateModule.default;
+  }
+).default;
 
 interface PaginationProps {
   totalPages: number;
