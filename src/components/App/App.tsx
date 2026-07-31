@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-
-import { fetchNotes, deleteNote } from "../../services/noteService";
+import { useQuery } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
+
+import { fetchNotes } from "../../services/noteService";
 
 import NoteList from "../NoteList/NoteList";
 import Pagination from "../Pagination/Pagination";
@@ -22,19 +22,10 @@ function App() {
     setPage(1);
   }, 500);
 
-  const queryClient = useQueryClient();
-
   const { data } = useQuery({
     queryKey: ["notes", page, search],
     queryFn: () => fetchNotes(page, search),
     placeholderData: (previousData) => previousData,
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: deleteNote,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notes"] });
-    },
   });
 
   return (
@@ -49,14 +40,13 @@ function App() {
             onPageChange={setPage}
           />
         )}
+
         <button className={css.button} onClick={() => setIsOpen(true)}>
           Create note +
         </button>
       </header>
 
-      {data && data.notes.length > 0 && (
-        <NoteList notes={data.notes} onDelete={deleteMutation.mutate} />
-      )}
+      {data && data.notes.length > 0 && <NoteList notes={data.notes} />}
 
       {isOpen && (
         <Modal onClose={() => setIsOpen(false)}>
